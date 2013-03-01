@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changeLog databaseName="fickle_test" >
+    <changeSet
+        id="1"
+        author="John" >
+        <createTable name="test_database" >
+            <column
+                name="id"
+                type="integer" >
+                <constraints
+                    nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column
+                name="name"
+                type="text" >
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+</changeLog>
