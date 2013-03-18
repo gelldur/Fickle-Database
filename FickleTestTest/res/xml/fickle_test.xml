@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<changeLog databaseName="fickle_test" >
+<changeLog databaseName="fickle_test_database" >
     <changeSet
         id="1"
+        comment="Comment of change set id 1"
         author="John" >
-        <createTable name="test_database" >
+        <createTable
+            name="test_database"
+            comment="Haha funny" >
             <column
                 name="id"
+                comment="column 1"
+                nullable="false"
+                primaryKey="true"
                 type="integer" >
-                <constraints
-                    nullable="false"
-                    primaryKey="true" />
             </column>
             <column
                 name="name"
                 type="text" >
-                <constraints nullable="false" />
             </column>
         </createTable>
+        <deleteTable
+            name="string"
+            comment="string" />
+        <sql
+            command="string"
+            comment="string" />
+    </changeSet>
+    <changeSet
+        id="2"
+        author="john2" >
     </changeSet>
 </changeLog>
