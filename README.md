@@ -7,7 +7,6 @@ Database change management for android something like Liquid Database
 example
 
 
-<?xml version="1.0" encoding="utf-8"?>
 <changeLog databaseName="fickle_test_database" >
     <changeSet
         id="1"
@@ -35,7 +34,6 @@ example
 
 Available document structure
 
-<?xml version="1.0" encoding="utf-8"?>
 <changeLog databaseName="string" >
     <changeSet
         id="string" 
