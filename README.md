@@ -15,15 +15,14 @@ example
 		        comment="I create it for tests" >
 		        <column
 		            name="id"
-		            type="integer" >
-		            <constraints
-		                nullable="false"
-		                primaryKey="true" />
+		            type="integer"
+		            nullable="false"
+		            primaryKey="true" >
 		        </column>
 		        <column
 		            name="name"
-		            type="text" >
-		            <constraints nullable="false" />
+		            type="text"
+		            nullable="false">
 		        </column>
 		    </createTable>
 		</changeSet>
