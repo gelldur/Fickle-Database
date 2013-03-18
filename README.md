@@ -6,7 +6,6 @@ Database change management for android something like Liquid Database
 
 example
 
-	<pre>
 	<changeLog databaseName="fickle_test_database" >
 		<changeSet
 		    id="1"
@@ -59,4 +58,3 @@ example
 		    	comment="string" />
 		</changeSet>
 	</changeLog>
-	</pre>
