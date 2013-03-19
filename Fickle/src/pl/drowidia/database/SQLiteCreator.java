@@ -80,4 +80,9 @@ public class SQLiteCreator {
 	return stringBuilder.append(" );").toString();
     }
 
+    public SQLiteCreator deleteTable(String tableName) {
+	stringBuilder.append("(DROP TABLE IF EXIST ").append(tableName);
+	return INSTANCE;
+    }
+
 }

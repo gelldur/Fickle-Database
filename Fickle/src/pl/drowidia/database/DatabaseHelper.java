@@ -17,18 +17,13 @@ import android.util.Xml;
 
 public class DatabaseHelper extends android.database.sqlite.SQLiteOpenHelper {
 
+    private static Parser parser;
+
     private static String getDatabaseName(Context context, int databaseFile) {
 
-	System.out.println("================================");
 	try {
-	    Parser parser = Parser.create(context.getResources().getXml(
-		    databaseFile));
-	    String databaseName = parser.getDatabaseName();
-	    System.out.println(databaseName);
-	    parser.nextChangeSet();
-
-	    System.out.println(parser.getChangeSetAuthor());
-
+	    parser = Parser.create(context.getResources().getXml(databaseFile));
+	    return parser.getDatabaseName();
 	} catch (NotFoundException e) {
 	    e.printStackTrace();
 	} catch (XmlPullParserException e) {
@@ -36,18 +31,26 @@ public class DatabaseHelper extends android.database.sqlite.SQLiteOpenHelper {
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
-
 	return null;
     }
 
-    private static int getDatabaseVersion() {
-	// TODO get count of change sets
-	return 1;
+    private static int getDatabaseVersion(Context context, int databaseFile) {
+	try {
+	    parser = Parser.create(context.getResources().getXml(databaseFile));
+	    return parser.countChangeSets();
+	} catch (NotFoundException e) {
+	    e.printStackTrace();
+	} catch (XmlPullParserException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+	return 0;
     }
 
     public DatabaseHelper(Context context, int databaseFile) {
 	super(context, getDatabaseName(context, databaseFile), null,
-		getDatabaseVersion());
+		getDatabaseVersion(context, databaseFile));
 
 	if (checkChangeLog()) {
 	    throw new ChangeLogException("Someone modified old change set!");

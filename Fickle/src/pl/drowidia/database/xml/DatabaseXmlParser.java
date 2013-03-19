@@ -15,4 +15,6 @@ public interface DatabaseXmlParser {
     public String getChangeSetId();
 
     public String getChangeSetAuthor();
+    
+    public int countChangeSets();
 }

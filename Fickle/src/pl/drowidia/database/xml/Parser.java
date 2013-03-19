@@ -20,7 +20,8 @@ public class Parser implements DatabaseXmlParser {
     private final static String TAG_CHANGE_SET_AUTHOR = "author";
     private final static String CHANGE_CREATE_TABLE = "createTable";
     private final static String CHANGE_DELETE_TABLE = "deleteTable";
-    private final static String CHANGE_SQL_COMMAND = "sql";
+    private final static String CHANGE_SQL = "sql";
+    private final static String CHANGE_SQL_COMMAND = "command";
     private final static String NAME = "name";
 
     private XmlPullParser xmlPullParser;
@@ -89,7 +90,7 @@ public class Parser implements DatabaseXmlParser {
 	    return parseChangeCreateTable();
 	} else if (changeName.equals(CHANGE_DELETE_TABLE)) {
 	    return parseChangeDeleteTable();
-	} else if (changeName.equals(CHANGE_SQL_COMMAND)) {
+	} else if (changeName.equals(CHANGE_SQL)) {
 	    return parseChangeSqlCommand();
 	}
 
@@ -137,18 +138,19 @@ public class Parser implements DatabaseXmlParser {
 		xmlPullParser.nextTag();
 	    }
 	    createTableChange = xmlPullParser.getName();
-
 	}
 
 	return createTableSql.toSql();
     }
 
     private String parseChangeDeleteTable() {
-	return null;
+	return SQLiteCreator.start()
+		.deleteTable(xmlPullParser.getAttributeValue(null, NAME))
+		.toSql();
     }
 
     private String parseChangeSqlCommand() {
-	return null;
+	return xmlPullParser.getAttributeValue(null, CHANGE_SQL_COMMAND);
     }
 
     @Override
@@ -171,4 +173,26 @@ public class Parser implements DatabaseXmlParser {
 	return changeSetAuthor;
     }
 
+    @Override
+    public int countChangeSets() {
+	try {
+	    int countChangeSets = 0;
+	    while (!(xmlPullParser.nextTag() == XmlPullParser.END_TAG
+		    && xmlPullParser.getName().equals(CHANGE_LOG))) {
+		System.out.println("Depth: " + xmlPullParser.getDepth());
+		if (xmlPullParser.getDepth() != CHANGE_SET_DEPTH)
+		    continue;
+		try {
+		    xmlPullParser.require(XmlPullParser.START_TAG, null,
+			    CHANGE_SET);
+		    ++countChangeSets;
+		} catch (XmlPullParserException ex) {
+		}
+	    }
+	    return countChangeSets;
+	} catch (Exception ex) {
+	    ex.printStackTrace();
+	    return 0;
+	}
+    }
 }

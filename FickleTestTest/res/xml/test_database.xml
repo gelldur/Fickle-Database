@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changeLog databaseName="test_database" >
+    <changeSet
+        id="1"
+        author="Dawid"
+        comment="Im testing database creation" >
+        <createTable
+            name="numbers"
+            comment="I will store here random numbers" >
+            <column
+                name="_id"
+                primaryKey="true"
+                type="integer" >
+            </column>
+            <column
+                name="number"
+                type="integer" >
+            </column>
+        </createTable>
+    </changeSet>
+</changeLog>

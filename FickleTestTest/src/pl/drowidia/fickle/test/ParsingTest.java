@@ -34,15 +34,30 @@ public class ParsingTest extends ActivityInstrumentationTestCase2<TestActivity> 
 	    assertTrue(true);
 	}
 
-	parser.nextChangeSet();
+	String changeSet = parser.nextChangeSet();
+	System.out.println("Change set: " + changeSet);
 
 	checkChangeSetAtributes("John", "1", parser);
 
 	String string = parser.nextChange();
+	System.out.println("Change: " + string);
+
+	string = parser.nextChange();
+	System.out.println("Change: " + string);
+
+	string = parser.nextChange();
+	System.out.println("Change: " + string);
 
 	parser.nextChangeSet();
 
 	checkChangeSetAtributes("john2", "2", parser);
+    }
+
+    public void testCheckChangeSetCount() throws NotFoundException, XmlPullParserException, IOException {
+
+	Parser parser = Parser.create(getActivity().getResources().getXml(
+		R.xml.fickle_test));
+	assertEquals(2, parser.countChangeSets());
     }
 
     private void checkChangeSetAtributes(String expectedAuthor,

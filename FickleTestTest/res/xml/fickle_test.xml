@@ -20,10 +20,10 @@
             </column>
         </createTable>
         <deleteTable
-            name="string"
+            name="test_database"
             comment="string" />
         <sql
-            command="string"
+            command="DROP TABLE IF EXIST test_database"
             comment="string" />
     </changeSet>
     <changeSet
