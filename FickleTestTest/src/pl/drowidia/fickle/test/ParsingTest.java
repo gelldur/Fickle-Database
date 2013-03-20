@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParserException;
 
 import pl.drowidia.database.xml.ChangeLogException;
+import pl.drowidia.database.xml.DatabaseXmlParser;
 import pl.drowidia.database.xml.Parser;
 import android.content.res.Resources.NotFoundException;
 import android.test.ActivityInstrumentationTestCase2;
@@ -22,7 +23,7 @@ public class ParsingTest extends ActivityInstrumentationTestCase2<TestActivity> 
     public void testFirst() throws NotFoundException, XmlPullParserException,
 	    IOException {
 	TestActivity testActivity = getActivity();
-	Parser parser = Parser.create(testActivity.getResources().getXml(
+	DatabaseXmlParser parser = Parser.create(testActivity.getResources().getXml(
 		R.xml.fickle_test));
 
 	assertEquals("fickle_test_database", parser.getDatabaseName());
@@ -61,7 +62,7 @@ public class ParsingTest extends ActivityInstrumentationTestCase2<TestActivity> 
     }
 
     private void checkChangeSetAtributes(String expectedAuthor,
-	    String expectedId, Parser parser) {
+	    String expectedId, DatabaseXmlParser parser) {
 	assertEquals(expectedAuthor, parser.getChangeSetAuthor());
 	assertEquals(expectedId, parser.getChangeSetId());
 
