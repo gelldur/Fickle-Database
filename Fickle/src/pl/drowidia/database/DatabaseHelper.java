@@ -1,19 +1,15 @@
 package pl.drowidia.database;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import pl.drowidia.database.xml.ChangeLogException;
 import pl.drowidia.database.xml.Parser;
-
 import android.content.Context;
 import android.content.res.Resources.NotFoundException;
-import android.content.res.XmlResourceParser;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Xml;
+import android.util.Log;
 
 public class DatabaseHelper extends android.database.sqlite.SQLiteOpenHelper {
 
@@ -36,8 +32,9 @@ public class DatabaseHelper extends android.database.sqlite.SQLiteOpenHelper {
 
     private static int getDatabaseVersion(Context context, int databaseFile) {
 	try {
-	    parser = Parser.create(context.getResources().getXml(databaseFile));
-	    return parser.countChangeSets();
+	    Parser parserCount = Parser.create(context.getResources().getXml(
+		    databaseFile));
+	    return parserCount.countChangeSets() + 1;
 	} catch (NotFoundException e) {
 	    e.printStackTrace();
 	} catch (XmlPullParserException e) {
@@ -45,7 +42,7 @@ public class DatabaseHelper extends android.database.sqlite.SQLiteOpenHelper {
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
-	return 0;
+	return -1;
     }
 
     public DatabaseHelper(Context context, int databaseFile) {
@@ -64,11 +61,47 @@ public class DatabaseHelper extends android.database.sqlite.SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+	try {
+	    applyPatches(db, 1, Integer.MAX_VALUE);
+	} catch (XmlPullParserException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+    }
 
+    private void applyPatches(SQLiteDatabase database, int oldVersion,
+	    int newVersion) throws XmlPullParserException, IOException {
+	int patch;
+	for (patch = 1; patch < oldVersion; ++patch) {
+	    if (parser.nextChangeSet() == false) {
+		return;
+	    }
+	    // This patch was applied
+	}
+
+	for (; patch <= newVersion; ++patch) {
+	    Log.d(this.toString(), "Next changeset");
+	    if (parser.nextChangeSet() == false) {
+		Log.d(this.toString(), "Last change set");
+		return;
+	    }
+	    String sqlPatch;
+	    while ((sqlPatch = parser.nextChange()) != null) {
+		Log.d(this.toString(), "Applying change:" + sqlPatch);
+		database.execSQL(sqlPatch);
+	    }
+	}
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	// TODO execute every change set
+	try {
+	    applyPatches(db, oldVersion, newVersion);
+	} catch (XmlPullParserException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
     }
 }

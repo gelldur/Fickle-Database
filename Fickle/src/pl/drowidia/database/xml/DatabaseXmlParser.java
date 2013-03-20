@@ -8,7 +8,7 @@ public interface DatabaseXmlParser {
 
     public String getDatabaseName();
 
-    public String nextChangeSet() throws XmlPullParserException, IOException;
+    public boolean nextChangeSet() throws XmlPullParserException, IOException;
 
     public String nextChange() throws XmlPullParserException, IOException;
 

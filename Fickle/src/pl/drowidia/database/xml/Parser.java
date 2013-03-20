@@ -56,34 +56,36 @@ public class Parser implements DatabaseXmlParser {
 
     /**
      * 
-     * @return null if no other change set available or SQL command from change
-     *         set
+     * @return true if there is next change set or false when no more change set
      * @throws IOException
      * @throws XmlPullParserException
      */
     @Override
-    public String nextChangeSet() throws XmlPullParserException, IOException {
-	boolean next = true;
-	while (next && xmlPullParser != null) {
-	    xmlPullParser.nextTag();
-	    System.out.println("Depth: " + xmlPullParser.getDepth());
-	    if (xmlPullParser.getDepth() != CHANGE_SET_DEPTH)
+    public boolean nextChangeSet() throws XmlPullParserException, IOException {
+	while (!(xmlPullParser.nextTag() == XmlPullParser.END_TAG && xmlPullParser
+		.getName().equals(CHANGE_LOG))) {
+	    if (xmlPullParser.getDepth() != CHANGE_SET_DEPTH
+		    || xmlPullParser.getEventType() == XmlPullParser.END_TAG)
 		continue;
 	    try {
 		xmlPullParser
 			.require(XmlPullParser.START_TAG, null, CHANGE_SET);
-		next = false;
+		return true;
 	    } catch (XmlPullParserException ex) {
+		ex.printStackTrace();
 	    }
 	}
-	return null;
+	return false;
     }
 
     @Override
     public String nextChange() throws XmlPullParserException, IOException {
 
 	xmlPullParser.nextTag();
-	System.out.println(xmlPullParser.getName());
+	if (xmlPullParser.getEventType() == XmlPullParser.END_TAG
+		&& xmlPullParser.getName().equals(CHANGE_SET)) {
+	    return null;
+	}
 	String changeName = xmlPullParser.getName();
 
 	if (changeName.equals(CHANGE_CREATE_TABLE)) {
@@ -109,15 +111,11 @@ public class Parser implements DatabaseXmlParser {
 
 	xmlPullParser.nextTag();
 
-	System.out.println("Here2");
 	// We move to first column
-	// This should be a collumn tag
+	// This should be a column tag
 	String createTableChange = xmlPullParser.getName();
 	while (!createTableChange.equals(CHANGE_CREATE_TABLE)) {
-
-	    System.out.println("Here");
 	    // Reading first column
-	    System.out.println(xmlPullParser.getName());
 	    String columnName = xmlPullParser.getAttributeValue(null, NAME);
 	    if (columnName == null)
 		throw new ChangeLogException("Column must have a name!");
@@ -177,9 +175,8 @@ public class Parser implements DatabaseXmlParser {
     public int countChangeSets() {
 	try {
 	    int countChangeSets = 0;
-	    while (!(xmlPullParser.nextTag() == XmlPullParser.END_TAG
-		    && xmlPullParser.getName().equals(CHANGE_LOG))) {
-		System.out.println("Depth: " + xmlPullParser.getDepth());
+	    while (!(xmlPullParser.nextTag() == XmlPullParser.END_TAG && xmlPullParser
+		    .getName().equals(CHANGE_LOG))) {
 		if (xmlPullParser.getDepth() != CHANGE_SET_DEPTH)
 		    continue;
 		try {
